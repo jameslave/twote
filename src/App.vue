@@ -1,24 +1,14 @@
 <template>
-  <div id="app">
-    <div class="container">
-      <div class="row d-flex justify-content-center align-items-center text-center">
-        <div class="col-sm-12 col-md-8 col-lg-6">
-          <router-link to="/"
-            tag="div"
-            class="logo link">
-            Twote
-          </router-link>
-        </div>
+  <div id="app"
+    class="container">
+
+    <div class="row d-flex justify-content-center align-items-center">
+      <div class="logo">
+        Twote
       </div>
     </div>
 
-    <div class="container">
-      <transition mode="out-in"
-        enter-active-class="animated fadeIn"
-        leave-active-class="animated fadeOut">
-        <router-view></router-view>
-      </transition>
-    </div>
+    <router-view></router-view>
 
     <router-link v-if="$route.path === '/'"
       to="/hof"
@@ -32,6 +22,7 @@
       class="nav link d-flex align-items-center">
       <i class="fa fa-quote-left fa-fw mr-2"></i> New Quote
     </router-link>
+
   </div>
 </template>
 
@@ -46,11 +37,15 @@ export default {
 <style>
 @import url('https://fonts.googleapis.com/css?family=Berkshire+Swash');
 
-#app {
+body {
   width: 100vw;
-  height: 100vh;
   background: linear-gradient(rgba(0, 0, 0, .3), rgba(0, 0, 0, .3)), url(./assets/bg.jpg) center center no-repeat;
   background-size: cover;
+  background-attachment: fixed;
+}
+
+#app {
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: space-around;

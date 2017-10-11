@@ -1,29 +1,23 @@
 <template>
-  <div class="row d-flex justify-content-center align-items-center">
-    <div class="col-sm-12 col-md-8">
-      <table class="quote-table">
-        <tr>
-          <th class="text-center">Likes</th>
-          <th>Quote</th>
-          <th>Author</th>
-          <th></th>
-          <th></th>
-        </tr>
-        <tr :key="quote.id"
-          v-for="quote in quotes">
-          <td class="text-center">{{ quote.likes }}</td>
-          <td>{{ quote.text }}</td>
-          <td>{{ quote.author }}</td>
-          <td class="text-center">
-            <i class="fa fa-heart fa-fw"
-              @click="likeQuote(quote)"></i>
-          </td>
-          <td class="text-center">
-            <i class="fa fa-twitter fa-fw"
-              @click="tweetQuote(quote)"></i>
-          </td>
-        </tr>
-      </table>
+  <div class="hof-container row d-flex flex-wrap justify-content-center align-items-center">
+    <div v-for="quote in firstTenQuotes"
+      :key="quote.id"
+      class="quote-card col-sm-12 col-md-4">
+      <div class="quote-card__content">
+        <div class="quote-card__quote">
+          <h5>{{ quote.text }}</h5>
+          <h6 class="quote-card__author">— {{ quote.author }}</h6>
+        </div>
+        <div class="quote-card__likes">
+          <span>{{ quote.likes }}</span>
+        </div>
+      </div>
+      <div class="quote-card__footer">
+        <i class="quote-card__icon fa fa-heart fa-fw fa-lg"
+          @click="likeQuote(quote)"></i>
+        <i class="quote-card__icon fa fa-twitter fa-fw fa-lg"
+          @click="tweetQuote(quote)"></i>
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +27,14 @@ export default {
   data() {
     return {
       quotes: null,
+    }
+  },
+
+  computed: {
+    firstTenQuotes() {
+      const unsortedQuotes = this.quotes ? this.quotes.slice(0, 10) : [];
+      const sortedQuotes = unsortedQuotes.sort((q1, q2) => q2.likes - q1.likes);
+      return sortedQuotes;
     }
   },
 
@@ -64,19 +66,60 @@ export default {
 </script>
 
 <style>
-table {
-  width: 100%;
+.hof-container {
+  max-height: 400px;
+  overflow-y: scroll;
 }
 
-tr {
-  border-bottom: 1px solid #eee;
+.quote-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin: 1rem;
 }
 
-th {
-  padding: 0 .5rem 1rem;
+.quote-card__content {
+  display: flex;
 }
 
-td {
-  padding: .5rem;
+.quote-card__likes {
+  margin-left: 1rem;
+  width: 64px;
+  height: 64px;
+  background: url(../assets/like.png) no-repeat center center;
+  background-size: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.quote-card__quote {
+  text-align: right;
+  flex: 3;
+}
+
+.quote-card__author {
+  color: #ccc;
+}
+
+.quote-card__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.quote-card__icon {}
+
+.quote-card__icon {
+  transition: color 0.2s;
+}
+
+.fa-heart:hover {
+  color: rgb(255, 128, 128);
+}
+
+.fa-twitter:hover {
+  color: #5bb0e5;
 }
 </style>

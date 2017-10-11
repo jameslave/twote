@@ -1,18 +1,15 @@
 <template>
   <div class="row d-flex flex-wrap justify-content-center align-items-center">
-    <div class="quote col-sm-12 col-md-6">
-      <transition enter-active-class="animated fadeIn"
-        leave-active-class="animated fadeOut">
-        <div v-if="quote">
-          <div class="quote__text">{{ quote.text }}</div>
-          <div class="quote__author">{{ quote.author }}</div>
-        </div>
-      </transition>
+    <div class="quote col-sm-12 col-md-8">
+      <div>
+        <div class="quote__text">{{ quote.text }}</div>
+        <div class="quote__author">{{ quote.author }}</div>
+      </div>
     </div>
     <div class="col-sm-12 col-md-1">
       <div class="quote__btns text-center">
         <i class="icon-refresh fa fa-refresh fa-fw"
-          :class="{'fa-spin': !quote}"
+          :class="{'fa-spin': loading}"
           @click="getQuote"></i>
         <i class="icon-like fa fa-heart fa-fw animated"
           :class="{'icon-like--active': liked, 'tada': liked}"
@@ -32,17 +29,20 @@ export default {
     return {
       quote: null,
       liked: false,
+      loading: false,
     }
   },
 
   methods: {
     getQuote() {
-      this.quote = null;
+      this.loading = true;
       setTimeout(() => {
         this.$http.get('https://us-central1-twote-c9c93.cloudfunctions.net/generate')
           .then((response) => {
             this.quote = response.data;
             this.quote.id = mongoid();
+            this.loading = false;
+            this.liked = false;
           }, (error) => {
             console.error(error);
           });
