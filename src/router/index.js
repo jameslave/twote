@@ -10,12 +10,12 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Quote',
+      name: 'quote',
       component: Quote
     },
     {
       path: '/hof',
-      name: 'Hall of Fame',
+      name: 'hof',
       component: HallOfFame,
     }
   ]

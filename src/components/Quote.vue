@@ -1,34 +1,37 @@
 <template>
-  <div class="container quote-container">
-    <div class="row d-flex justify-content-center align-items-center">
-      <div class="quote col-sm-12 col-md-6">
-        <transition enter-active-class="animated fadeIn"
-          leave-active-class="animated fadeOut">
-          <div v-if="quote">
-            <div class="quote__text">{{ quote.text }}</div>
-            <div class="quote__author">{{ quote.author }}</div>
-          </div>
-        </transition>
-        <div class="quote__btns">
-          <i class="icon-refresh fa fa-refresh fa-fw"
-            :class="{'fa-spin': !quote}"
-            @click="getQuote"></i>
-          <i class="icon-like fa fa-heart fa-fw"
-            @click="likeQuote"></i>
-          <i class="icon-tweet fa fa-twitter fa-fw"
-            @click="tweetQuote"></i>
+  <div class="row d-flex flex-wrap justify-content-center align-items-center">
+    <div class="quote col-sm-12 col-md-6">
+      <transition enter-active-class="animated fadeIn"
+        leave-active-class="animated fadeOut">
+        <div v-if="quote">
+          <div class="quote__text">{{ quote.text }}</div>
+          <div class="quote__author">{{ quote.author }}</div>
         </div>
+      </transition>
+    </div>
+    <div class="col-sm-12 col-md-1">
+      <div class="quote__btns text-center">
+        <i class="icon-refresh fa fa-refresh fa-fw"
+          :class="{'fa-spin': !quote}"
+          @click="getQuote"></i>
+        <i class="icon-like fa fa-heart fa-fw animated"
+          :class="{'icon-like--active': liked, 'tada': liked}"
+          @click="likeQuote"></i>
+        <i class="icon-tweet fa fa-twitter fa-fw"
+          @click="tweetQuote"></i>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import mongoid from 'mongoid-js';
 
 export default {
   data() {
     return {
       quote: null,
+      liked: false,
     }
   },
 
@@ -39,6 +42,7 @@ export default {
         this.$http.get('https://us-central1-twote-c9c93.cloudfunctions.net/generate')
           .then((response) => {
             this.quote = response.data;
+            this.quote.id = mongoid();
           }, (error) => {
             console.error(error);
           });
@@ -46,7 +50,37 @@ export default {
     },
 
     likeQuote() {
-
+      const quotesRef = this.$firebase.database().ref('quotes');
+      this.liked = !this.liked;
+      const quoteRef = quotesRef.child(`${this.quote.id}`);
+      if (this.liked) { // if post liked
+        quoteRef
+          .once('value')
+          .then(snapshot => {
+            if (snapshot.val()) {
+              const likes = snapshot.val().likes;
+              quoteRef.update({ likes: likes + 1 });
+            } else {
+              quoteRef.set({
+                id: this.quote.id,
+                text: this.quote.text,
+                author: this.quote.author,
+                likes: 1,
+              });
+            }
+          });
+      } else { // if post unliked
+        quoteRef
+          .once('value')
+          .then(snapshot => {
+            const likes = snapshot.val().likes;
+            if (likes <= 1) {
+              quoteRef.remove();
+            } else {
+              quoteRef.update({ likes: likes - 1 });
+            }
+          });
+      }
     },
 
     tweetQuote() {
@@ -67,6 +101,7 @@ export default {
   padding-right: 1rem;
   letter-spacing: 0.05rem;
   text-align: right;
+  min-height: 100px;
 }
 
 @media (max-width: 768px) {
@@ -106,8 +141,12 @@ export default {
   transition: color 0.2s;
 }
 
+.icon-like--active {
+  color: rgb(255, 64, 64);
+}
+
 .icon-like:hover {
-  color: rgb(255, 64, 128);
+  color: rgb(255, 128, 128);
 }
 
 .icon-tweet {
@@ -115,6 +154,6 @@ export default {
 }
 
 .icon-tweet:hover {
-  color: rgb(64, 128, 255);
+  color: rgb(128, 128, 255);
 }
 </style>
