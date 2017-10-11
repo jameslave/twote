@@ -84,8 +84,8 @@ export default {
 
 .quote-card__likes {
   margin-left: 1rem;
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   background: url(../assets/like.png) no-repeat center center;
   background-size: contain;
   display: flex;
@@ -109,7 +109,9 @@ export default {
   margin-top: 1rem;
 }
 
-.quote-card__icon {}
+.quote-card__icon {
+  margin: 0 .2rem;
+}
 
 .quote-card__icon {
   transition: color 0.2s;
